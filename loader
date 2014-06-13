@@ -1,0 +1,10 @@
+term.setBackgroundColor(colors.white)
+term.setTextColor(colors.black)
+term.clear()
+
+a = 'Starting ameOS'
+
+term.setCursorPos(25 - #a / 2, 11)
+term.write(a)
+
+sleep(3)

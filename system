@@ -1,0 +1,43 @@
+width, height = term.getSize()
+function shutdown()
+  term.setBackgroundColor(colors.white)
+  term.setTextColor(colors.black)
+  term.clear()
+  a = 'ameOS shutting down'
+  term.setCursorPos(width / 2 - #a / 2, height / 2)
+  term.write(a)
+  sleep(4)
+  os.shutdown()
+end
+
+function reboot()
+  term.setBackgroundColor(colors.white)
+  term.setTextColor(colors.black)
+  term.clear()
+  a = 'ameOS rebooting'
+  term.setCursorPos(width / 2 - #a / 2, height / 2)
+  term.write(a)
+  sleep(4)
+  os.reboot()
+end
+
+function update()
+  term.setBackgroundColor(colors.white)
+  term.setTextColor(colors.black)
+  term.clear()
+  a = 'ameOS updating please wait'
+  term.setCursorPos(width / 2 - #a / 2, height / 2)
+  term.write(a)
+  sleep(3)
+end
+
+function update_reboot()
+  term.setBackgroundColor(colors.white)
+  term.setTextColor(colors.black)
+  term.clear()
+  a = 'ameOS rebooting after update'
+  term.setCursorPos(width / 2 - #a / 2, height / 2)
+  term.write(a)
+  sleep(5)
+  os.reboot()
+end

@@ -1,0 +1,145 @@
+version = '1.0.1'
+os.loadAPI('/System/api/system')
+width, height = term.getSize()
+develop = false
+name = ''
+pass = ''
+theme = 0
+textcol = 0
+diacol = 0
+focused = true
+myTimer = os.startTimer(1)
+barpos = height
+
+timer = ''
+
+if fs.exists('/tmp') then
+  fs.delete('/tmp')
+  fs.makeDir('/tmp')
+end
+
+function timed()
+  if focused then
+    term.setBackgroundColor(theme)
+    timer = textutils.formatTime(os.time(), false)
+    paintutils.drawLine(width - #timer, barpos, width, barpos, theme)
+    term.setCursorPos(width - #timer,barpos)
+    term.write(timer)
+  end
+end
+function run(program)
+  term.setBackgroundColor(colors.black)
+  term.clear()
+  term.setCursorPos(1,1)
+  focused = false
+  shell.run(program)
+  focused = true
+  draw()
+end
+function draw()
+  f = fs.open('/System/settings.cfg', 'r')
+  name = f.readLine()
+  pass = f.readLine()
+  theme = tonumber(f.readLine())
+  textcol = tonumber(f.readLine())
+  diacol = tonumber(f.readLine())
+  f.close()
+  
+  term.setBackgroundColor(colors.white)
+  term.setTextColor(textcol)
+  term.clear()
+  tempback = paintutils.loadImage('/System/background.pic')
+  paintutils.drawImage(tempback, 1,4)
+  term.setCursorPos(1,barpos)
+  term.setBackgroundColor(theme)
+  term.clearLine()
+  term.setCursorPos(1,barpos)
+  term.setTextColor(textcol)
+  term.write('M')
+  term.setTextColor(textcol)
+  shellpic = paintutils.loadImage('/System/programs/shell.ico')
+  paintutils.drawImage(shellpic, 2, 3)
+  filepic = paintutils.loadImage('/System/file.pic')
+  paintutils.drawImage(filepic, width - 6, 3)
+  title = 'File Browser'
+  term.setBackgroundColor(colors.white)
+  term.setCursorPos(width - 3 - #title / 2 - 2, 8)
+  term.write(title)
+  term.setBackgroundColor(colors.white)
+  term.setCursorPos(2, 8)
+  term.write('Shell')
+  timed()
+end
+
+if develop then
+  a = 5
+else
+  run('/System/update')
+end
+draw()
+isMenu = false
+isTimeMenu = false
+
+function main()
+  event, button, x, y = os.pullEvent()
+    
+  if event == 'mouse_click' then
+    if x == 1 and y == barpos then
+      if isMenu == false then
+	term.setBackgroundColor(diacol)
+        term.setCursorPos(1,barpos - 5)
+	term.write('  Reboot   ')
+	term.setCursorPos(1,barpos - 4)
+	term.write('           ')
+	term.setCursorPos(1,barpos - 3)
+      	term.write('  Shutdown ')
+      	term.setCursorPos(1, barpos - 2)
+	term.write('           ')
+      	term.setCursorPos(1,barpos - 1)
+      	term.write('  Settings ')
+	isMenu = true
+      else
+        isMenu = false
+        draw()
+      end
+    elseif x >= 1 and x <= 9 and y == barpos - 5 and isMenu then
+        system.reboot()
+    elseif x >= 1 and x <= 9 and y == barpos - 3 and isMenu then
+	system.shutdown()
+    elseif x >= 1 and x <= 9 and y == barpos - 1 and isMenu then
+      run('/System/settings')
+    elseif x >= 2 and x <= 6 and y >= 3 and y <= 6 and isMenu == false then
+      run('/rom/programs/shell')
+    elseif x >= width - 6 and x <= width - 3 and y >= 3 and y <= 6 then
+      run('/System/programs/browser')
+    elseif x >= width - #timer + 1 and x <= width and y == barpos then
+      if isTimeMenu == false then
+	term.setBackgroundColor(diacol)
+	for i=0, 5 do
+	  for w=0, #timer + 3 do
+	    term.setCursorPos((width - #timer - 3) + w, barpos - 1 - i)
+	    term.write(' ')
+	  end
+	end
+	isTimeMenu = true
+	text = 'Day: '..os.day()
+	term.setCursorPos(width - #timer / 2 - #text / 2,barpos - 3)
+	term.write(text)
+      else
+        isTimeMenu = false
+	draw()
+      end
+    end
+  elseif event == 'timer' then
+    timed()
+  end
+end
+
+while true do
+  if develop then
+    main()
+  else
+    pcall(main)
+  end
+  myTimer = os.startTimer(1)
+end

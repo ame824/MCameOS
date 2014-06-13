@@ -1,0 +1,70 @@
+width, height = term.getSize()
+developer = false
+
+f = fs.open('/System/settings.cfg', 'r')
+username = f.readLine()
+pass = f.readLine()
+
+message = ''
+usrinpname = ''
+usrinppass = ''
+function draw()
+  term.setBackgroundColor(colors.white)
+  term.setTextColor(colors.black)
+  term.clear()
+  tempy = paintutils.loadImage('/System/background.pic')
+  paintutils.drawImage(tempy, 1, 9)
+  term.setBackgroundColor(colors.white)
+  term.setTextColor(colors.black)
+  term.setCursorPos(17, 9)
+  term.write('user: ')
+  term.setTextColor(colors.blue)
+  term.setCursorPos(23, 9)
+  term.write(usrinpname)
+  term.setCursorPos(17, 11)
+  term.setTextColor(colors.black)
+  term.write('pass: ')
+  term.setTextColor(colors.blue)
+  for i=1, #usrinppass do
+    term.setCursorPos(22 + i, 11)
+    term.write('*')
+  end
+  term.setTextColor(colors.red)
+  term.setCursorPos(25 - #message / 2, 1)
+  term.write(message)
+end
+draw()
+function inp()
+  term.setTextColor(colors.blue)
+  event, button, x, y = os.pullEvent('mouse_click')
+  if x >= 23  and x <= 51 and y == 9 then
+    paintutils.drawLine(23, 9, 51, 9, colors.white)
+    term.setCursorPos(23, 9)
+    usrinpname = read()
+    if usrinpname == username then
+      a = 5
+    else
+      message = 'wrong username/password'
+    end
+  elseif x >= 23 and x <= 51 and y == 11 then
+    paintutils.drawLine(23, 11, 51, 11, colors.white)
+    term.setCursorPos(23, 11)
+    usrinppass = read('*')
+    if usrinppass == pass then
+      a = 5
+    else
+      message = 'wrong username/password'
+    end
+  end
+  draw()
+end
+
+repeat
+  if developer == true then
+    inp()
+  else
+    pcall(inp)
+  end
+until usrinpname == username and usrinppass == pass
+shell.run('/System/loader')
+shell.run('/System/gui')
